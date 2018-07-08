@@ -21,7 +21,7 @@ public class DatabaseController{
         User user = new User();
         user.setFirstName(firstname);
         user.setLastName(lastname);
-        db.userDao().insertAll(user);
+        db.userDao().insert(user);
     }
 
     public static List<User> selectUser(){

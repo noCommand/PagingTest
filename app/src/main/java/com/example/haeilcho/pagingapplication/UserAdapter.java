@@ -10,10 +10,25 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class UserAdapter extends PagedListAdapter<User,UserAdapter.UserViewHolder> {
+public class UserAdapter<T extends User> extends PagedListAdapter<T,UserAdapter.UserViewHolder> {
 
     public UserAdapter() {
-        super(DIFF_CALLBACK);
+        super(new DiffUtil.ItemCallback<T>() {
+            @Override
+            public boolean areItemsTheSame(
+                    @NonNull T oldUser, @NonNull T newUser) {
+                // User properties may have changed if reloaded from the DB, but ID is fixed
+                return oldUser.getId() == newUser.getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(
+                    @NonNull T oldUser, @NonNull T newUser) {
+                // NOTE: if you use equals, your object must properly override Object#equals()
+                // Incorrectly returning false here will result in too many animations.
+                return oldUser.equals(newUser);
+            }
+        });
     }
 
     @NonNull
@@ -25,7 +40,7 @@ public class UserAdapter extends PagedListAdapter<User,UserAdapter.UserViewHolde
 
     @Override
     public void onBindViewHolder(UserViewHolder holder, int position) {
-        User user = getItem(position);
+        T user = getItem(position);
         if (user != null) {
             holder.bindTo(user);
         } else {
@@ -35,18 +50,18 @@ public class UserAdapter extends PagedListAdapter<User,UserAdapter.UserViewHolde
         }
     }
 
-    public static final DiffUtil.ItemCallback<User> DIFF_CALLBACK =
-            new DiffUtil.ItemCallback<User>() {
+    public  final DiffUtil.ItemCallback<T> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<T>() {
                 @Override
                 public boolean areItemsTheSame(
-                        @NonNull User oldUser, @NonNull User newUser) {
+                        @NonNull T oldUser, @NonNull T newUser) {
                     // User properties may have changed if reloaded from the DB, but ID is fixed
                     return oldUser.getId() == newUser.getId();
                 }
 
                 @Override
                 public boolean areContentsTheSame(
-                        @NonNull User oldUser, @NonNull User newUser) {
+                        @NonNull T oldUser, @NonNull T newUser) {
                     // NOTE: if you use equals, your object must properly override Object#equals()
                     // Incorrectly returning false here will result in too many animations.
                     return oldUser.equals(newUser);
