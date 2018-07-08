@@ -62,6 +62,7 @@ public class UserAdapter extends PagedListAdapter<User,UserAdapter.UserViewHolde
             textView = (TextView) itemView.findViewById(R.id.item_textview);
         }
         public void bindTo(User user){
+            textView.setText(user.getFirstName());
 
         }
         public void clear(){
